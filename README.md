@@ -1,66 +1,170 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CaféStock
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A small web application that helps a café kitchen track its ingredients — what is in stock, what is running low, and what is about to expire.
 
-## About Laravel
+Built with **Laravel 10**, **MySQL** and **Bootstrap 5** for a university group project. All data is fake.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## What it does
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Login** — register, login and logout. Every other page requires a login.
+- **Categories and Suppliers** — full add / view / edit / delete.
+- **Ingredients** — name, unit, quantity, low-stock level, expiry date, category and supplier.
+- **Stock log** — record stock in and stock out. The ingredient's quantity updates automatically.
+- **Status badges** — Expired (red), Expiring soon (yellow, within 7 days), Low stock (orange).
+- **Search and filter** — by name, category, supplier and status.
+- **PDF export** — the stock list, with quantities, expiry dates and status.
+- **Dashboard** — total ingredients, low-stock count, expiring-soon count, and the five most recent stock records.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Requirements
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+| Tool | Version | Notes |
+| --- | --- | --- |
+| PHP | 8.1 or higher | Laravel 10 minimum |
+| Composer | any recent version | Installed with Laragon |
+| MySQL | 5.7+ / MariaDB 10.3+ | Run through Laragon |
+| Laragon | any | Runs PHP, MySQL and Composer together |
+| Git | any | |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## Setup — first time on your laptop
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Follow these **in order**. Step 2 is not optional and the order matters.
 
-### Premium Partners
+### 1. Clone the project into Laragon's `www` folder
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+```
+cd C:\laragon\www
+git clone -b develop https://github.com/danialdondol/cafestock.git
+cd cafestock
+```
 
-## Contributing
+### 2. Allow Laravel 10 to install
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
+composer config policy.advisories.block false
+```
 
-## Code of Conduct
+> **Why?** Laravel 10 is past end-of-life, so Composer now refuses to install it by default because of known security advisories. This line tells Composer to go ahead for this project only. Skip it and the next command fails with *"Your requirements could not be resolved to an installable set of packages."*
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 3. Install the PHP packages
 
-## Security Vulnerabilities
+```
+composer install
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+> This downloads Laravel and everything it needs into a `vendor` folder. It takes a minute. That folder is **never** committed to GitHub.
 
-## License
+### 4. Create your private environment file
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+copy .env.example .env
+```
+
+This gives you your own `.env`. It is ignored by Git — each person has their own, and it never goes to GitHub.
+
+### 5. Generate your application key
+
+```
+php artisan key:generate
+```
+
+You should see *"Application key set successfully."*
+
+### 6. Create your database
+
+In Laragon, click **Database** (opens phpMyAdmin) → **New** → name it `cafestock` → **Create**.
+
+Then open `.env` in VS Code and check these lines:
+
+```
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=cafestock
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+An empty password is normal on a default Laragon install.
+
+### 7. Build the tables
+
+```
+php artisan migrate
+```
+
+### 8. Run it
+
+Click **Start All** in Laragon, then open the project in your browser at the address Laragon shows next to it — usually `http://cafestock.test`.
+
+Alternatively run `php artisan serve` and open `http://127.0.0.1:8000`.
+
+---
+
+## Demo account
+
+The demo seeder is still being written. Once it lands, this section will list the login details, and you will be able to load the fake data with:
+
+```
+php artisan migrate:fresh --seed
+```
+
+---
+
+## Working on the project
+
+**Use the `develop` branch. Never push to `main`.**
+
+```
+git checkout develop
+git pull
+git checkout -b feature/your-task
+```
+
+Make your changes, then:
+
+```
+git add .
+git commit -m "Describe what you did"
+git push -u origin feature/your-task
+```
+
+Then open a pull request **into `develop`** on GitHub. Fill in the template. Someone else reviews it and merges it with **Squash and merge**.
+
+Branch prefixes: `feature/`, `fix/`, `docs/`.
+
+Read **[CONVENTIONS.md](CONVENTIONS.md)** before your first pull request — it covers naming, routes, controller comments and which files belong to whom.
+
+---
+
+## Troubleshooting
+
+| Problem | Fix |
+| --- | --- |
+| `Your requirements could not be resolved...` | You skipped step 2. Run `composer config policy.advisories.block false`, then `composer install` again |
+| `Could not open input file: artisan` | You are in the wrong folder. `cd C:\laragon\www\cafestock` |
+| `SQLSTATE[HY000] [1049] Unknown database 'cafestock'` | The database does not exist yet — do step 6 |
+| `No application encryption key has been specified` | Do step 5: `php artisan key:generate` |
+| Composer warns about 5 security advisories | Expected. Laravel 10 is end-of-life; the project is pinned to it deliberately |
+| `LF will be replaced by CRLF` warning | Harmless Windows line-ending notice. Ignore it |
+
+---
+
+## Team
+
+| Member | Role |
+| --- | --- |
+| 1 | Backend lead and project manager — repository, database design, authentication |
+| 2 | Interface and navigation — layout, navbar, badges, dashboard |
+| 3 | Ingredients, categories and suppliers — CRUD, validation, search, status rule |
+| 4 | Stock log and PDF export |
+| 5 | Documentation, testing and slides |
+
+---
+
+<sub>Built with [Laravel 10](https://laravel.com). Laravel is open-source software licensed under the [MIT license](https://opensource.org/licenses/MIT).</sub>
